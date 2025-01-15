@@ -16,7 +16,7 @@ Convert Twitter/X.com videos to GIFs using Docker.
   chmod +x vid-to-gif.sh
 
   # Run (first run will build Docker image)
-  ./vid-to-gif.sh https://x.com/username/status/123456789
+  ./vid-to-gif.sh https://x.com/hperryhorton/status/1747705965666079069
   ```
 
 GIFs are saved to `~/Downloads/`.
