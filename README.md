@@ -2,8 +2,8 @@
 
 Convert Twitter/X.com videos to GIFs using Docker.
 
-## Goals / Mission Statement
-The mission is to create a browser plugin and mobile app that allows users to consume public social media posts, particularly memes, without the distractions of pop-ups, ads, and tracking. We aim to provide a clean, user-friendly experience that aggregates content from various platforms while prioritizing user privacy and customization.
+## The Mission
+...is to create a browser plugin and mobile app that allows users to consume public social media posts, particularly memes, without the distractions of pop-ups, ads, and tracking. We aim to provide a clean, user-friendly experience that aggregates content from various platforms while prioritizing user privacy and customization.
 
 ## To do
 - Add support for videos from various platforms:
