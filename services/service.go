@@ -4,8 +4,15 @@ import (
 	"strings"
 )
 
+type DownloadMode int
+
+const (
+	ModeGIF DownloadMode = iota
+	ModeVideo
+)
+
 type MediaService interface {
-	ProcessURL(url string, outputDir string) (string, error)
+	ProcessURL(url string, outputDir string, mode DownloadMode) (string, error)
 }
 
 func GetService(hostname string) MediaService {

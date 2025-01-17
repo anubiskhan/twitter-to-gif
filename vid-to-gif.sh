@@ -2,12 +2,20 @@
 
 # Check if URL is provided
 if [ -z "$1" ]; then
-    echo "Please provide a Twitter/X.com URL"
-    echo "Usage: ./vid-to-gif.sh <url>"
+    echo "Please provide a URL"
+    echo "Usage: ./vid-to-gif.sh <url> [gif|video]"
     exit 1
 fi
 
 input_url="$1"
+mode="${2:-gif}"  # Default to gif if not specified
+
+# Validate mode
+if [[ "$mode" != "gif" && "$mode" != "video" ]]; then
+    echo "Invalid mode: $mode"
+    echo "Mode must be either 'gif' or 'video'"
+    exit 1
+fi
 
 # Get user's home directory and Downloads path
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -30,4 +38,4 @@ docker build -t twitter-to-gif-converter -f Dockerfile.converter .
 docker run --rm \
     -v "$DOWNLOADS_DIR:/workdir" \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    twitter-to-gif-app "$input_url"
+    twitter-to-gif-app "$input_url" "$mode"

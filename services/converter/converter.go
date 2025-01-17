@@ -7,11 +7,22 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 )
 
 type Converter struct {
 	containerImage string
+}
+
+type ConversionMode string
+
+const (
+	ModeGIF   ConversionMode = "gif"
+	ModeVideo ConversionMode = "video"
+)
+
+type ConversionRequest struct {
+	URL  string         `json:"url"`
+	Mode ConversionMode `json:"mode"`
 }
 
 type ConversionResponse struct {
@@ -26,51 +37,44 @@ func New() *Converter {
 	}
 }
 
-func (c *Converter) ConvertToGif(inputURL string, outputDir string) (string, error) {
+func (c *Converter) Convert(inputURL string, mode ConversionMode) (string, []byte, error) {
+	request := ConversionRequest{
+		URL:  inputURL,
+		Mode: mode,
+	}
+
+	requestJSON, err := json.Marshal(request)
+	if err != nil {
+		return "", nil, fmt.Errorf("failed to marshal request: %v", err)
+	}
+
 	var outb bytes.Buffer
 	cmd := exec.Command("docker", "run", "--rm",
+		"-i", // Enable stdin for JSON input
 		c.containerImage,
-		inputURL,
 	)
 
+	cmd.Stdin = bytes.NewReader(requestJSON)
 	cmd.Stdout = &outb
 	cmd.Stderr = os.Stderr
 
-	fmt.Printf("Running converter for URL: %s\n", inputURL)
-
 	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("conversion failed: %v", err)
+		return "", nil, fmt.Errorf("conversion failed: %v", err)
 	}
 
-	// Parse the JSON response
 	var response ConversionResponse
 	if err := json.NewDecoder(&outb).Decode(&response); err != nil {
-		return "", fmt.Errorf("failed to parse converter response: %v", err)
+		return "", nil, fmt.Errorf("failed to parse converter response: %v", err)
 	}
 
 	if response.Error != "" {
-		return "", fmt.Errorf("converter error: %s", response.Error)
+		return "", nil, fmt.Errorf("converter error: %s", response.Error)
 	}
 
-	fmt.Printf("Received filename: %s\n", response.Filename)
-
-	// Decode base64 data and write to file
 	data, err := base64.StdEncoding.DecodeString(response.Data)
 	if err != nil {
-		return "", fmt.Errorf("failed to decode gif data: %v", err)
+		return "", nil, fmt.Errorf("failed to decode media data: %v", err)
 	}
 
-	// Write to the mounted workdir
-	outputPath := filepath.Join("/workdir", response.Filename)
-	fmt.Printf("Writing to path: %s\n", outputPath)
-
-	if err := os.WriteFile(outputPath, data, 0644); err != nil {
-		return "", fmt.Errorf("failed to write gif file: %v", err)
-	}
-
-	hostPath := filepath.Join(outputDir, response.Filename)
-	fmt.Printf("Returning host path: %s\n", hostPath)
-
-	// Return the path relative to the host's Downloads directory
-	return hostPath, nil
+	return response.Filename, data, nil
 }

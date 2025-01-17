@@ -13,11 +13,16 @@ func main() {
 	flag.Parse()
 	if flag.NArg() < 1 {
 		fmt.Println("Please provide a URL")
-		fmt.Println("Usage: vid-to-gif <url>")
+		fmt.Println("Usage: vid-to-gif <url> [gif|video]")
 		os.Exit(1)
 	}
 
 	inputURL := flag.Arg(0)
+	mode := services.ModeGIF
+	if flag.NArg() > 1 && flag.Arg(1) == "video" {
+		mode = services.ModeVideo
+	}
+
 	parsedURL, err := url.Parse(inputURL)
 	if err != nil {
 		fmt.Printf("Error parsing URL: %v\n", err)
@@ -41,7 +46,7 @@ func main() {
 	os.MkdirAll(downloadDir, 0755)
 
 	// Process the URL
-	outputPath, err := service.ProcessURL(inputURL, downloadDir)
+	outputPath, err := service.ProcessURL(inputURL, downloadDir, mode)
 	if err != nil {
 		fmt.Printf("Error processing URL: %v\n", err)
 		os.Exit(1)
