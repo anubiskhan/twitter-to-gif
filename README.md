@@ -1,13 +1,47 @@
 # Twitter-to-GIF
 
-Convert Twitter/X.com videos to GIFs using Docker.
+Convert social media videos to GIFs or download them directly using Docker.
 
 ## The Mission
 ...is to create a browser plugin and mobile app that allows users to consume public social media posts, particularly memes, without the distractions of pop-ups, ads, and tracking. We aim to provide a clean, user-friendly experience that aggregates content from various platforms while prioritizing user privacy and customization.
 
+## Prerequisites
+- Docker
+- Git
+
+## Quick Start
+```bash
+# Clone the repo
+git clone git@github.com:anubiskhan/twitter-to-gif.git
+cd twitter-to-gif
+
+# Make script executable
+chmod +x vid-to-gif.sh
+
+# Convert to GIF (default)
+./vid-to-gif.sh https://x.com/hperryhorton/status/1747705965666079069
+
+# Download as video
+./vid-to-gif.sh https://x.com/username/status/123456789 video
+```
+
+Media files are saved to `~/Downloads/`.
+
+## Supported Platforms
+- Twitter/X.com
+- Instagram
+
+## Notes
+- Works with public posts only
+- GIF output format:
+  - Width: 480px (maintains aspect ratio)
+  - FPS: 10
+- Video output format:
+  - Original quality MP4
+  - Direct download, no re-encoding
+
 ## To do
 - Add support for videos from various platforms:
-  - Instagram
   - TikTok
   - YouTube
   - Twitch
@@ -40,28 +74,3 @@ Convert Twitter/X.com videos to GIFs using Docker.
 
 ### User Experience
 - Conduct user testing and feedback sessions
-
-## Prerequisites
-- Docker
-- Git
-
-## Quick Start
-  ```bash
-  # Clone the repo
-  git clone git@github.com:anubiskhan/twitter-to-gif.git
-  cd twitter-to-gif
-
-  # Make script executable
-  chmod +x vid-to-gif.sh
-
-  # Run (first run will build Docker image)
-  ./vid-to-gif.sh https://x.com/hperryhorton/status/1747705965666079069
-  ```
-
-GIFs are saved to `~/Downloads/`.
-
-## Notes
-- Works with public Twitter/X.com video/gif posts
-- Output format: `username_tweetid.gif`
-- Default size: 480px width (maintains aspect ratio)
-- FPS: 10
