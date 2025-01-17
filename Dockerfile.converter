@@ -1,0 +1,11 @@
+FROM python:3-alpine
+
+# Install required packages
+RUN apk add --no-cache ffmpeg yt-dlp
+
+WORKDIR /app
+
+# Copy the conversion script
+COPY scripts/convert.py .
+
+ENTRYPOINT ["python", "convert.py"] 
