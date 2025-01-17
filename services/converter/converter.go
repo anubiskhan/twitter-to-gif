@@ -36,6 +36,8 @@ func (c *Converter) ConvertToGif(inputURL string, outputDir string) (string, err
 	cmd.Stdout = &outb
 	cmd.Stderr = os.Stderr
 
+	fmt.Printf("Running converter for URL: %s\n", inputURL)
+
 	if err := cmd.Run(); err != nil {
 		return "", fmt.Errorf("conversion failed: %v", err)
 	}
@@ -50,6 +52,8 @@ func (c *Converter) ConvertToGif(inputURL string, outputDir string) (string, err
 		return "", fmt.Errorf("converter error: %s", response.Error)
 	}
 
+	fmt.Printf("Received filename: %s\n", response.Filename)
+
 	// Decode base64 data and write to file
 	data, err := base64.StdEncoding.DecodeString(response.Data)
 	if err != nil {
@@ -58,10 +62,15 @@ func (c *Converter) ConvertToGif(inputURL string, outputDir string) (string, err
 
 	// Write to the mounted workdir
 	outputPath := filepath.Join("/workdir", response.Filename)
+	fmt.Printf("Writing to path: %s\n", outputPath)
+
 	if err := os.WriteFile(outputPath, data, 0644); err != nil {
 		return "", fmt.Errorf("failed to write gif file: %v", err)
 	}
 
+	hostPath := filepath.Join(outputDir, response.Filename)
+	fmt.Printf("Returning host path: %s\n", hostPath)
+
 	// Return the path relative to the host's Downloads directory
-	return filepath.Join(outputDir, response.Filename), nil
+	return hostPath, nil
 }
