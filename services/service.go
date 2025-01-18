@@ -21,6 +21,8 @@ func GetService(hostname string) MediaService {
 		return NewTwitterService()
 	case strings.Contains(hostname, "instagram.com"):
 		return NewInstagramService()
+	case strings.Contains(hostname, "facebook.com"), strings.Contains(hostname, "fb.com"):
+		return NewFacebookService()
 	default:
 		return nil
 	}

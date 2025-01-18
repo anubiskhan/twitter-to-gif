@@ -5,14 +5,21 @@ import json
 import base64
 import re
 
-def normalize_twitter_url(url):
-    """Convert x.com URLs to twitter.com format"""
-    return url.replace('x.com', 'twitter.com')
+def normalize_url(url):
+    """Normalize URLs for different platforms"""
+    if 'x.com' in url:
+        return url.replace('x.com', 'twitter.com')
+    elif 'facebook.com' in url:
+        # Remove tracking parameters from Facebook URLs
+        url = re.sub(r'\?mibextid=[^&]+', '', url)
+        url = re.sub(r'&mibextid=[^&]+', '', url)
+        return url
+    return url
 
 def convert_media(request_json):
     try:
         request = json.loads(request_json)
-        url = request.get('url')
+        url = normalize_url(request.get('url'))
         mode = request.get('mode', 'gif')
 
         # Common options for yt-dlp
@@ -24,6 +31,13 @@ def convert_media(request_json):
             '--no-playlist',
             '--format', 'best[ext=mp4]'
         ]
+
+        # Add Facebook-specific options if needed
+        if 'facebook.com' in url:
+            yt_dlp_opts.extend([
+                '--add-header', 'Cookie:c_user=XXXXX',  # Note: User might need to provide their own cookies
+                '--add-header', 'Accept-Encoding:gzip, deflate, br'
+            ])
 
         # Get filename
         filename = subprocess.check_output(
